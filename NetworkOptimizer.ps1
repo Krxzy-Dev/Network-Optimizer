@@ -60,6 +60,35 @@ function Write-RunLog {
     }
 }
 
+function Write-Wrapped {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Text,
+        [string]$Indent = '    ',
+        [ValidateSet('Plain', 'Head', 'Ok', 'Warn', 'Bad', 'Dim', 'Ask')][string]$Style = 'Dim'
+    )
+    $width = 100
+    try {
+        $seen = $Host.UI.RawUI.WindowSize.Width
+        if ($seen -gt 40) { $width = $seen - 1 }
+    } catch {
+        Write-RunLog -Level 'WARN' -Message 'Console width not readable, wrapping at 100.'
+    }
+    $room = [math]::Max(($width - $Indent.Length), 30)
+    $line = ''
+    foreach ($word in ($Text -split '\s+')) {
+        if (-not $word) { continue }
+        if ($line.Length -eq 0) {
+            $line = $word
+        } elseif (($line.Length + 1 + $word.Length) -le $room) {
+            $line = "$line $word"
+        } else {
+            Write-Ui -Text "$Indent$line" -Style $Style
+            $line = $word
+        }
+    }
+    if ($line) { Write-Ui -Text "$Indent$line" -Style $Style }
+}
+
 function Write-Head {
     param([Parameter(Mandatory = $true)][string]$Text)
     Write-Ui -Text '' -Style 'Plain'
@@ -1424,7 +1453,7 @@ function Show-Plan {
         $tail = if ($flags.Count -gt 0) { '  [' + ($flags -join ', ') + ']' } else { '' }
         $style = if ($t.Risk -eq 'High') { 'Bad' } elseif ($t.Risk -eq 'Medium') { 'Warn' } else { 'Plain' }
         Write-Ui -Text ("{0,2}. {1}{2}" -f $n, $t.Title, $tail) -Style $style
-        Write-Ui -Text "    $($t.Detail)" -Style 'Dim'
+        Write-Wrapped -Text $t.Detail -Indent '    '
     }
     Write-Ui -Text '' -Style 'Plain'
     Write-Ui -Text "$n things will be changed." -Style 'Head'
@@ -1511,7 +1540,7 @@ function Invoke-CustomPick {
         $t = $Script:Tweaks[$id]
         $style = if ($t.Risk -eq 'High') { 'Bad' } elseif ($t.Risk -eq 'Medium') { 'Warn' } else { 'Plain' }
         Write-Ui -Text ("{0,2}. [{1,-8}] {2}" -f $i, $t.Group, $t.Title) -Style $style
-        Write-Ui -Text "    $($t.Detail)" -Style 'Dim'
+        Write-Wrapped -Text $t.Detail -Indent '    '
     }
     Write-Ui -Text '' -Style 'Plain'
     Write-Ui -Text 'Type the numbers you want, split by commas. Like: 1,2,5,14' -Style 'Plain'
@@ -2141,7 +2170,7 @@ function Invoke-GroupMenu {
             $flag = ''
             if ($t.Reboot) { $flag = '  (needs a reboot)' }
             Write-Ui -Text ("{0,2}. {1}{2}" -f ($i + 1), $t.Title, $flag) -Style $style
-            Write-Ui -Text "    $($t.Detail)" -Style 'Dim'
+            Write-Wrapped -Text $t.Detail -Indent '    '
         }
         if ($null -ne $Extra) {
             Write-Ui -Text '' -Style 'Plain'
@@ -2322,7 +2351,7 @@ function Invoke-PresetMenu {
         for ($i = 0; $i -lt $keys.Count; $i++) {
             $p = $Script:Presets[$keys[$i]]
             Write-Ui -Text ("{0}. {1}" -f ($i + 1), $p.Title) -Style 'Plain'
-            Write-Ui -Text "   $($p.Detail)" -Style 'Dim'
+            Write-Wrapped -Text $p.Detail -Indent '   '
         }
         Write-Ui -Text ("{0}. Custom - pick tweaks one by one" -f ($keys.Count + 1)) -Style 'Plain'
         Write-Ui -Text '0. Back' -Style 'Plain'

@@ -16,6 +16,7 @@ a one click undo.
 
 - [What it does](#what-it-does)
 - [Quick start](#quick-start)
+- [Screenshots](#screenshots)
 - [The menu](#the-menu)
 - [Presets](#presets)
 - [What each section does](#what-each-section-does)
@@ -56,6 +57,42 @@ a one click undo.
 `Run.bat` asks for admin and starts PowerShell with the execution policy bypassed, so you do not
 have to mess about with any of that yourself. The script also checks for admin on its own if you
 prefer to run the .ps1 directly.
+
+## Screenshots
+
+**Main menu**
+
+![Main menu](docs/screenshots/main-menu.png)
+
+**Menu 1, what you have got.** It flags the Ethernet card sitting at 100 Mbps on a gigabit port.
+
+![Network summary](docs/screenshots/summary.png)
+
+**Menu 3, cleaning.** Red means it can break something, yellow means think first.
+
+![Clean menu](docs/screenshots/clean-menu.png)
+
+**Menu 7, the Safe preset.** Nothing happens until you have read this list and typed y.
+
+![The plan](docs/screenshots/plan.png)
+
+**Applying it.**
+
+![Applying](docs/screenshots/applying.png)
+
+**Menu 8, before and after.**
+
+![Test results](docs/screenshots/test.png)
+
+**Dry run mode.** Same run, nothing touched.
+
+![Dry run](docs/screenshots/dryrun.png)
+
+More: [pick your cards](docs/screenshots/pick-cards.png),
+[Wi-Fi info](docs/screenshots/wifi-info.png),
+[Wi-Fi and TCP menu](docs/screenshots/tcp-menu.png),
+[Ethernet menu](docs/screenshots/eth-menu.png),
+[DNS switcher](docs/screenshots/dns.png).
 
 ## The menu
 
